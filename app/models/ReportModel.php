@@ -54,7 +54,7 @@ class ReportModel
 			LEFT JOIN MASTER_PRICE MP 
 			ON MP.ID = BKT.PRICE
 
-			WHERE BK.MEMBERID ='MB-003'
+			WHERE BK.MEMBERID ='$inp_app_report'
 			AND BK.STATUS_APPROVED = 1
 			AND BK.STATUS_BOOKING = 1"
 		);

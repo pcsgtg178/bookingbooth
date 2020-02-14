@@ -1,4 +1,9 @@
 <?php $this->layout("layouts/main") ?>
+<style>
+    .ui-front {
+        z-index: 318;
+    }
+</style>
 <div class="container">
     <br>
     <table>

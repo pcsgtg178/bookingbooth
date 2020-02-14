@@ -83,6 +83,7 @@ class BookingModel
 
 	public function list($memberid){
 		$sql = "SELECT ROW_NUMBER() OVER (Order by BK.BOOKINGDATE DESC) AS RowNumber,
+				BK.BOOKINGID,
 				BK.BOOKINGDATE,
 				BKT.SALEDATE,
 				BK.BOOKEDDATE,
@@ -101,7 +102,7 @@ class BookingModel
 					WHERE CONVERT(DATE, GETDATE(), 5) < CONVERT(DATE, BKT.SALEDATE, 5) 
 				) BKT
 				ON BKT.BOOKINGID = BK.BOOKINGID
-				WHERE MEMBERID = 'MB-003'
+				WHERE BK.MEMBERID = '$memberid'
 				AND BK.STATUS_OVER = 0
 				ORDER BY BK.BOOKINGDATE DESC";
 		return Sqlsrv::array($this->conn->connect(),$sql); 

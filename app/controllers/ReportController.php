@@ -29,7 +29,7 @@ class ReportController
 		foreach ($data_line as $value_num) {
 			$Num++;
 		}
-		$number_rows = 10-$Num;
+		$number_rows = 20-$Num;
 		for ($i=0; $i < $number_rows; $i++) { 
 			foreach ($fake_data[$i] as $value) {
 				$sorted = [];
