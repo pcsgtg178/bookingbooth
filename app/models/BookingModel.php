@@ -39,8 +39,10 @@ class BookingModel
 				FROM BOOKING BK
 				LEFT JOIN MEMBER MB
 				ON BK.MEMBERID = MB.ID
+				LEFT JOIN BOOKINGDETAIL BKT
+				ON BKT.BOOKINGID = BK.BOOKINGID
 				LEFT JOIN MASTER_PRICE MP
-				ON MP.ID = BK.TOTAL
+				ON MP.ID = BKT.PRICE
 				WHERE BK.STATUS_OVER = 0
 				GROUP BY  BK.MEMBERID
 						,MB.NAME
@@ -81,8 +83,8 @@ class BookingModel
 
 	public function list($memberid){
 		$sql = "SELECT ROW_NUMBER() OVER (Order by BK.BOOKINGDATE DESC) AS RowNumber,
-				BK.BOOKINGID,
 				BK.BOOKINGDATE,
+				BKT.SALEDATE,
 				BK.BOOKEDDATE,
 				BK.BOOTHID,
 				BT.DETAIL,
@@ -94,8 +96,13 @@ class BookingModel
 				ON BK.BOOTHID = BT.ID
 				LEFT JOIN MASTER_PRICE MP
 				ON MP.ID = BK.TOTAL
-				WHERE MEMBERID = '$memberid'
-				AND STATUS_OVER = 0
+				LEFT JOIN (
+					SELECT * FROM BOOKINGDETAIL BKT
+					WHERE CONVERT(DATE, GETDATE(), 5) < CONVERT(DATE, BKT.SALEDATE, 5) 
+				) BKT
+				ON BKT.BOOKINGID = BK.BOOKINGID
+				WHERE MEMBERID = 'MB-003'
+				AND BK.STATUS_OVER = 0
 				ORDER BY BK.BOOKINGDATE DESC";
 		return Sqlsrv::array($this->conn->connect(),$sql); 
 	}
@@ -137,6 +144,173 @@ class BookingModel
 		}
 		return false;
 	}
+	public function booking_detail($bookingid,$priceid){
+
+		$t = strtotime("next Tuesday");
+		$f = strtotime("next Friday");
+		$nextT = date("Y-m-d", $t);
+		$nextF = date("Y-m-d", $f);
+
+		$wt = strtotime("+1 week next Tuesday");
+		$wf = strtotime("+1 week next Friday");
+		$weekT = date("Y-m-d", $wt);
+		$weekF = date("Y-m-d", $wf);
+
+		$w2t = strtotime("+2 week next Tuesday");
+		$w2f = strtotime("+2 week next Friday");
+		$week2T = date("Y-m-d", $w2t);
+		$week2F = date("Y-m-d", $w2f);
+
+		$w3t = strtotime("+3 week next Tuesday");
+		$w3f = strtotime("+3 week next Friday");
+		$week3T = date("Y-m-d", $w3t);
+		$week3F = date("Y-m-d", $w3f);
+
+		$conn 	= $this->conn->connect();
+		if (sqlsrv_begin_transaction ($conn) === false){
+         	die( print_r( sqlsrv_errors(), true ));
+		}
+		try{
+			if($priceid == 1){
+				$insertbookingdetail = sqlsrv_query(
+					$this->conn->connect(),
+					"INSERT INTO BOOKINGDETAIL(
+								BOOKINGID,
+								SALEDATE,
+								PRICE) VALUES(?,?,?)
+		
+					INSERT INTO BOOKINGDETAIL(
+					BOOKINGID,
+					SALEDATE,
+					PRICE) VALUES(?,?,?)
+		
+					INSERT INTO BOOKINGDETAIL(
+					BOOKINGID,
+					SALEDATE,
+					PRICE) VALUES(?,?,?)
+		
+					INSERT INTO BOOKINGDETAIL(
+					BOOKINGID,
+					SALEDATE,
+					PRICE) VALUES(?,?,?)
+					
+					INSERT INTO BOOKINGDETAIL(
+								BOOKINGID,
+								SALEDATE,
+								PRICE) VALUES(?,?,?)
+		
+					INSERT INTO BOOKINGDETAIL(
+					BOOKINGID,
+					SALEDATE,
+					PRICE) VALUES(?,?,?)
+		
+					INSERT INTO BOOKINGDETAIL(
+					BOOKINGID,
+					SALEDATE,
+					PRICE) VALUES(?,?,?)
+		
+					INSERT INTO BOOKINGDETAIL(
+					BOOKINGID,
+					SALEDATE,
+					PRICE) VALUES(?,?,?)",
+					array(
+						$bookingid,$nextT,$priceid,
+						$bookingid,$nextF,$priceid,
+						$bookingid,$weekT,$priceid,
+						$bookingid,$weekF,$priceid,
+						$bookingid,$week2T,$priceid,
+						$bookingid,$week2F,$priceid,
+						$bookingid,$week3T,$priceid,
+						$bookingid,$week3F,$priceid,
+					)					
+				);
+						
+				if($insertbookingdetail)
+				{	
+					$checkerror = true;
+				}
+				else
+				{
+					$checkerror = false;
+				}
+	
+				if($checkerror)
+				{
+					sqlsrv_commit ($conn);
+					return 	[
+							"result" => true,
+							"message" => "Create successful."
+						];
+				}
+				else
+				{
+					sqlsrv_rollback ($conn);
+					return 	[
+						"result" => false,
+						"message" => sqlsrv_errors()
+					];
+				}
+				
+			}
+			elseif ($priceid == 2){
+				$insertbookingdetail = sqlsrv_query(
+					$this->conn->connect(),
+					"INSERT INTO BOOKINGDETAIL(
+								BOOKINGID,
+								SALEDATE,
+								PRICE) VALUES(?,?,?)
+
+					INSERT INTO BOOKINGDETAIL(
+					BOOKINGID,
+					SALEDATE,
+					PRICE) VALUES(?,?,?)",
+					array(
+						$bookingid,
+						$nextT,
+						$priceid,
+						$bookingid,
+						$nextF,
+						$priceid,
+					)					
+				);
+						
+				if($insertbookingdetail)
+				{	
+					$checkerror = true;
+				}
+				else
+				{
+					$checkerror = false;
+				}
+	
+				if($checkerror)
+				{
+					sqlsrv_commit ($conn);
+					return 	[
+							"result" => true,
+							"message" => "Create successful."
+						];
+				}
+				else
+				{
+					sqlsrv_rollback ($conn);
+					return 	[
+						"result" => false,
+						"message" => sqlsrv_errors()
+					];
+				}
+				
+			}
+		}
+		catch (Exception $e) {
+			Sqlsrv::rollback($this->conn->connect());
+			return 	[
+				"result" => false,
+				"message" => $e->getMessage()
+			];
+
+		}
+	}
 
 	public function bookingbooth($memberid
 							,$boothid
@@ -175,107 +349,38 @@ class BookingModel
 														,$priceid
 													)					
 										);
-					if($priceid == '2'){
-						$d =strtotime("tomorrow");
-						$nextdate = date("Y-m-d", $d);
-						try{
-							$bookingid = self::gennumberseq($conn);
-							$bookingid = $boothid.'-'.date('Y').sprintf("%02d", date('m')).'-'.$bookingid;
-							if(isset($bookingid)){
-								$insertbookingbooth = sqlsrv_query(
-																	$this->conn->connect(),
-																	"INSERT INTO BOOKING(
-																	BOOKINGID
-																	,BOOTHID
-																	,MEMBERID
-																	,BOOKINGDATE
-																	,BOOKEDDATE
-																	,SALEDATE
-																	,TOTAL
-																	,STATUS_BOOKING
-																	,STATUS_OVER) VALUES(?,?,?,?,?,?,?,1,0)",
-																	array(
-																		$bookingid
-																		,$boothid
-																		,$memberid
-																		,$bookingdate
-																		,$bookeddate
-																		,$nextdate
-																		,$priceid
-																	)					
-														);						
-							}
-							
-							if($insertbookingbooth)
-							{
-								if(self::updatenumberseq($conn))
-								{
-									$checkerror = true;
-								}
-								else
-								{
-									$checkerror = false;
-								}
-							}
+						
+				if($insertbookingbooth)
+				{	
+					$booking_detail = self::booking_detail($bookingid,$priceid);
+					if(self::updatenumberseq($conn) && $booking_detail == true)
+					{
+						$checkerror = true;
+					}
+					else
+					{
+						$checkerror = false;
+					}
+				}
 				
-							if($checkerror)
-							{
-								sqlsrv_commit ($conn);
-								return 	[
-										"result" => true,
-										"message" => "Create successful."
-									];
-							}
-							else
-							{
-								sqlsrv_rollback ($conn);
-								return 	[
-									"result" => false,
-									"message" => sqlsrv_errors()
-								];
-							}
-				
-						}
-						catch (Exception $e) {
-							Sqlsrv::rollback($this->conn->connect());
-							return 	[
-								"result" => false,
-								"message" => $e->getMessage()
-							];
-				
-						}
-					}						
-			}
-			
-			if($insertbookingbooth)
-			{
-				if(self::updatenumberseq($conn))
+				if($checkerror)
 				{
-					$checkerror = true;
+					sqlsrv_commit ($conn);
+					return 	[
+							"result" => true,
+							"message" => "Create successful."
+						];
 				}
 				else
 				{
-					$checkerror = false;
-				}
-			}
-
-			if($checkerror)
-			{
-				sqlsrv_commit ($conn);
-				return 	[
-						"result" => true,
-						"message" => "Create successful."
+					sqlsrv_rollback ($conn);
+					return 	[
+						"result" => false,
+						"message" => sqlsrv_errors()
 					];
+				}
+				
 			}
-			else
-			{
-				sqlsrv_rollback ($conn);
-				return 	[
-					"result" => false,
-					"message" => sqlsrv_errors()
-				];
-			}
-
 		}
 		catch (Exception $e) {
 			Sqlsrv::rollback($this->conn->connect());
@@ -285,7 +390,6 @@ class BookingModel
 			];
 
 		}
-		
 	}
 
 	public function delete($id) 

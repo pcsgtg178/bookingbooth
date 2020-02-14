@@ -166,6 +166,10 @@
                     type: "date"
                 },
                 { 
+                    name: "BOOKEDDATE",
+                    type: "date"
+                },
+                { 
                     name: "BOOTHID",
                     type: "string" 
                 },
@@ -215,12 +219,17 @@
                     cellsformat: 'dd/MM/yyyy'
                 },
                 { 
+                    text:"วันที่สิ้นสุด", 
+                    datafield: "BOOKEDDATE",
+                    cellsformat: 'dd/MM/yyyy'
+                },
+                { 
                     text:"รหัสล๊อค", 
                     datafield: "BOOTHID",
                     width:"10%"
                 },
                 { 
-                    text:"ยอดจ่าย", 
+                    text:"ราคาล๊อค", 
                     datafield: "PRICE",
                     cellsformat: 'd2',
                     aggregates:['sum'],

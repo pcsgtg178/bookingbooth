@@ -1,4 +1,14 @@
 <?php $this->layout("layouts/main") ?>
+<?php 
+        $t = strtotime("next Tuesday");
+        $nextT = date("Y-m-d", $t);
+        
+        $f = strtotime("next Friday");
+        $nextF = date("Y-m-d", $f);
+        
+        $w3f = strtotime("+3 week next Friday");
+        $week3F = date("Y-m-d", $w3f);
+?>
 <style>
     .ui-front {
         z-index: 318;
@@ -48,11 +58,14 @@
 		            <input type="date" name="bookingdate" id="bookingdate" class="form-control" autocomplete="off" >
                 </div>
                 <div class="form-group">
+		            <label for="lab_saledate" id="lab_saledate">วันที่เริ่มขาย</label>
+		            <input type="date" name="saledate" id="saledate" class="form-control" autocomplete="off" >
+                </div>
+                <div class="form-group">
 		            <label for="lab_bookeddate" id="lab_bookeddate">วันที่สิ้นสุด</label>
 		            <input type="date" name="bookeddate" id="bookeddate" class="form-control" autocomplete="off" >
                 </div>
 
-		        <input type="hidden" name="saledate">
                 <input type="hidden" name="createBy">
                 <input type="hidden" name="updateBy">
 
@@ -85,8 +98,11 @@
         disiblebutton();
         document.getElementById("Save").disabled = true;
     });
+    
     var session_userid = '<?php echo $_SESSION["userid"]; ?>';
-
+    var sale_date = '<?php echo $nextT; ?>';
+    var end_date2 = '<?php echo $nextF; ?>';
+    var end_date1 = '<?php echo $week3F ?>';
     function bookingDate(inputDate, addDay){
         var d = new Date(inputDate);
         d.setDate(d.getDate()+addDay);
@@ -187,6 +203,8 @@
             $('input[name=bookingdate]').hide();
             $('#lab_bookeddate').hide();
             $('input[name=bookeddate]').hide();
+            $('#lab_saledate').hide();
+            $('input[name=saledate]').hide();
         }
 
         $("#priceid").jqxListBox({width: 466, height: 52});   
@@ -218,21 +236,27 @@
                         $('input[name=bookingdate]').show();
                         $('#lab_bookeddate').show();
                         $('input[name=bookeddate]').show();
-                        $('input[name=saledate]').val(nowDate);
+                        $('#lab_saledate').show();
+                        $('input[name=saledate]').show();
+                        $('input[name=saledate]').val(sale_date);
+                        $('input[name=saledate]').prop('readonly', true);
                         $('input[name=bookingdate]').val(nowDate);
                         $('input[name=bookingdate]').prop('readonly', true);
-                        $('input[name=bookeddate]').val(bookingDate(now2Date, 7));
+                        $('input[name=bookeddate]').val(end_date1);
                         $('input[name=bookeddate]').prop('readonly', true);
                     }
                     if(item.value == 2){
                         $('#lab_bookingdate').show();
                         $('input[name=bookingdate]').show();
+                        $('#lab_saledate').show();
+                        $('input[name=saledate]').show();
                         $('#lab_bookeddate').show();
                         $('input[name=bookeddate]').show();
-                        $('input[name=saledate]').val(nowDate);
+                        $('input[name=saledate]').val(sale_date);
+                        $('input[name=saledate]').prop('readonly', true);
                         $('input[name=bookingdate]').val(nowDate);
                         $('input[name=bookingdate]').prop('readonly', true);
-                        $('input[name=bookeddate]').val(bookingDate(now2Date, 1));
+                        $('input[name=bookeddate]').val(end_date2);
                         $('input[name=bookeddate]').prop('readonly', true);
                     }
                 }
@@ -332,6 +356,7 @@
             { name: "RowNumber", type: "int"},
             { name: "BOOKINGID", type: "string"},
             { name: "BOOKINGDATE", type: "date", cellsformat: "dd-MM-yyyy"},
+            { name: "SALEDATE", type: "date", cellsformat: "dd-MM-yyyy"},
             { name: "BOOKEDDATE", type: "date", cellsformat: "dd-MM-yyyy"},
             { name: "BOOTHID", type: "string"},
             { name: "DETAIL", type: "string"},
@@ -358,11 +383,11 @@
             theme : 'Office',
             columns: [
             { text:"อันดับ", datafield: "RowNumber", width:60},
-            { text:"รหัสการจอง", datafield: "BOOKINGID", width:"13%"},
-            { text:"วันที่จอง", datafield: "BOOKINGDATE", cellsformat: "dd-MM-yyyy", width:"13%"},
-            { text:"วันที่สิ้นสุด", datafield: "BOOKEDDATE", cellsformat: "dd-MM-yyyy", width:"13%"},
+            { text:"วันที่จอง", datafield: "BOOKINGDATE", cellsformat: "dd-MM-yyyy", width:"10%"},
+            { text:"วันที่ขาย", datafield: "SALEDATE", cellsformat: "dd-MM-yyyy", width:"10%"},
+            { text:"วันที่สิ้นสุด", datafield: "BOOKEDDATE", cellsformat: "dd-MM-yyyy", width:"10%"},
             { text:"รหัสล๊อค", datafield: "BOOTHID"},
-            { text:"รายละเอียด", datafield: "DETAIL"},
+            { text:"รายละเอียด", datafield: "DETAIL", width:"13%"},
             { text:"ราคา", datafield: "PRICE", cellsformat: "d2", aggregates: ['sum'], width:"13%" },
             { 
                 text: 'สถานะการอนุมัติ',

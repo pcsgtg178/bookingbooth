@@ -31,3 +31,29 @@ Run this command in the application directory to run the test suite
 	php composer.phar test
 
 That's it! Now go build something cool.
+
+
+## HOW TO USE BOOKINGBOOTH
+Install SQL SERVER Database
+	include bookingbooth.bak to database
+
+Install XAMPP or Apache 
+	config file httpd.conf
+		Listen 'port number' 
+
+	and httpd-userdir.conf
+		<VirtualHost *: 'port number'> 
+			DocumentRoot "path to \slimproject\public"
+			ServerName localhost:'port number'
+			<Directory "path to \slimproject\public">
+				Options -Indexes +FollowSymLinks +MultiViews
+				AllowOverride All
+				Require all granted
+			</Directory>
+		</VirtualHost>
+
+Install php
+	Check directory php/ext have sqlsrv dll file?  
+	and check file php.ini have extension= sqlsrv dll file?  
+
+open and run apache and open web browser at localhost:'port number'.  
