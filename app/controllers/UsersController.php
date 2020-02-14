@@ -42,36 +42,22 @@ class UsersController
 	public function create($request, $response, $args)
 	{
 		$parsedBody = $request->getParsedBody();
-		if ($parsedBody["form_type"]=="create") {
-			if($response->withJson($this->user->createuser($parsedBody["mb_user"],
-															$parsedBody["mb_pass"],
-															$parsedBody["mb_name"],
-															$parsedBody["mb_tel"])
-										) === false)
-			{
-				echo json_encode(["status" => 404, "message" => "Create Failed"]);
-				header("Location: /signup");
-				exit;
-			}
-			else{
-				echo json_encode(["status" => 200, "message" => "Create Success"]);
-				header("Location: /user/auth");
-				exit;
-			}
+		
+		if($response->withJson($this->user->createuser($parsedBody["mb_user"],
+														$parsedBody["mb_pass"],
+														$parsedBody["mb_name"],
+														$parsedBody["mb_tel"])
+									) === false)
+		{
+			echo json_encode(["status" => 404, "message" => "เกิดข้อผิดพลาดในการสมัครสมาชิก"]);
+			header("Location: /signup");
+			exit();
 		}
 		else{
-
-			if($response->withJson($this->user->updateuser($parsedBody["mb_user"]
-			 											   // ,$parsedBody["inp_password"]
-			 											   ,$parsedBody["mb_pass"]
-			 											   ,$parsedBody["mb_name"]
-															,$parsedBody["mb_tel"]
-															,$parsedBody["userid"])) === false)
-			{
-				header("Location: /profile");
-				exit;
-			}
+			echo json_encode(["status" => 201, "message" => "สมัครสมาชิกเรียบร้อย"]);
+			exit();
 		}
+		
 	}
     
 	public function auth($request, $response, $args)

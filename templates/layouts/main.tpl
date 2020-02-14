@@ -250,10 +250,10 @@
 		<?= $this->section('content'); ?>
 		<br>
 	</div>
-	<div class="container" style="font-size: larger;">
+	<!--<div class="container" style="font-size: larger;">
 		<span class="float-right"><a href="#">Back to top</a></span>
 		<p>&copy; 2019-2020 Company Deestone, Ltd. &middot;</p>
-	</div>
+	</div>-->
 	</div>
 </body>
 </html>
