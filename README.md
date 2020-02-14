@@ -37,11 +37,14 @@ That's it! Now go build something cool.
 Install SQL SERVER Database
 	include bookingbooth.bak to database
 
-Install XAMPP or Apache 
+Install XAMPP or Apache
+ 
 	config file httpd.conf
+
 		Listen 'port number' 
 
-	and httpd-userdir.conf
+	and config httpd-vhosts.conf
+
 		<VirtualHost *: 'port number'> 
 			DocumentRoot "path to \slimproject\public"
 			ServerName localhost:'port number'
